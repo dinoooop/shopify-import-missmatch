@@ -2,9 +2,6 @@
 
 namespace scripts\InventoryCorrection;
 
-use scripts\InventoryCorrection\Base\ManageDB;
-use scripts\InventoryCorrection\Base\MapLocationBase;
-
 class MapLocation extends MapLocationBase
 {
     

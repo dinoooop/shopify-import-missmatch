@@ -21,7 +21,7 @@ class InventoryCorrection
     public function setShopifyProducts()
     {
         $obj = new ShopifyProduct();
-        $obj->importFromCSV();
+        $obj->init();
     }
     public function setHeartlandProducts()
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace scripts\InventoryCorrection\Base;
+namespace scripts\InventoryCorrection;
 
 class HeartlandProductBase extends ManageDB
 {

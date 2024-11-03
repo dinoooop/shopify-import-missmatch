@@ -2,7 +2,7 @@
 
 namespace scripts\InventoryCorrection;
 
-use scripts\InventoryCorrection\Base\HeartlandInventoryBase;
+use lib\heartland\Heartland_main;
 
 class HeartlandInventory extends HeartlandInventoryBase
 {

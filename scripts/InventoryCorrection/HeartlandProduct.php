@@ -4,7 +4,6 @@ namespace scripts\InventoryCorrection;
 
 use lib\heartland\Heartland_main;
 use helper\Helper;
-use scripts\InventoryCorrection\Base\HeartlandProductBase;
 
 class HeartlandProduct extends HeartlandProductBase
 {

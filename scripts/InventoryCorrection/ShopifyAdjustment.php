@@ -2,8 +2,6 @@
 
 namespace scripts\InventoryCorrection;
 
-use scripts\InventoryCorrection\Base\ShopifyAdjustmentBase;
-use scripts\InventoryCorrection\Utilities\Format;
 
 class ShopifyAdjustment extends ShopifyAdjustmentBase
 {
@@ -33,7 +31,7 @@ class ShopifyAdjustment extends ShopifyAdjustmentBase
                 if ($status == 'adjusted' && !empty($row['barcode'])) {
                     $row['s_location_name'] = $data[array_search("Location", $header)];
                     $row['qty'] = $data[array_search("Adjustment", $header)];
-                    $row['created_at'] = Format::changeDateFormat($date);
+                    $row['created_at'] = $this->changeDateFormat($date);
                     $this->insert($row);
                 }
             }

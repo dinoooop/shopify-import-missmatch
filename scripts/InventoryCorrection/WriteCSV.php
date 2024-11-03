@@ -2,8 +2,6 @@
 
 namespace scripts\InventoryCorrection;
 
-use scripts\InventoryCorrection\Base\WriteCSVBase;
-
 class WriteCSV extends WriteCSVBase
 {
 

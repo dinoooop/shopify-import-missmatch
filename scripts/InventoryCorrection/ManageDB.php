@@ -1,6 +1,6 @@
 <?php
 
-namespace scripts\InventoryCorrection\Base;
+namespace scripts\InventoryCorrection;
 
 class ManageDB
 {
@@ -43,5 +43,11 @@ class ManageDB
     {
         $sid = str_replace('gid://shopify/Location/', '', $locationGid);
         return intval($sid);
+    }
+
+    public function changeDateFormat($date)
+    {
+        $dateTime = \DateTime::createFromFormat('d-m-Y', $date);
+        return $dateTime ? $dateTime->format('Y-m-d') : false;
     }
 }

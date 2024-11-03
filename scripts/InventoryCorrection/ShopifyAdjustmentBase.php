@@ -1,8 +1,7 @@
 <?php
 
-namespace scripts\InventoryCorrection\Base;
+namespace scripts\InventoryCorrection;
 
-use scripts\InventoryCorrection\Utilities\Format;
 
 class ShopifyAdjustmentBase extends ManageDB
 {

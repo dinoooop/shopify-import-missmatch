@@ -2,9 +2,7 @@
 
 namespace scripts\InventoryCorrection;
 
-use scripts\InventoryCorrection\Base\ShopifyProductBase;
 use lib\shopify\Shopify;
-
 
 class ShopifyProduct extends ShopifyProductBase
 {
@@ -17,7 +15,7 @@ class ShopifyProduct extends ShopifyProductBase
         $this->shopifyObj = new Shopify();
     }
 
-    public function importFromGQL()
+    public function init()
     {
 
         $this->resetTable();
@@ -31,7 +29,7 @@ class ShopifyProduct extends ShopifyProductBase
         $page = 1;
         do {
 
-            echo "shopify products page:: {$page} \n";
+            echo "Set shopify products page - {$page} \n";
 
             $payload = json_encode([
                 "query" => $query,
@@ -64,7 +62,9 @@ class ShopifyProduct extends ShopifyProductBase
                     $row['s_location_id'] = $this->intShopifyLocationId($inventoryLevel->location->id);
                     $row['s_location_name'] = $inventoryLevel->location->name;
                     $row['on_hand'] = isset($inventoryLevel->quantities[0]) ? $inventoryLevel->quantities[0]->quantity : null;
-                    $this->insert($row);
+                    if(!empty($row['barcode'])){
+                        $this->insert($row);
+                    }
                 }
             }
 
