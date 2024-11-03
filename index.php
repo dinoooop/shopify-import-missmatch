@@ -52,6 +52,13 @@ if (isset($argv[1])) {
             echo "Find Miss Matches \n";
             
             break;
+
+        case 7:
+            echo "Find Stocky Activities \n";
+
+            $icObj->findStockyActivities();
+            
+            break;
         
         default:
             # code...

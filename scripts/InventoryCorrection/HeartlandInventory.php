@@ -19,7 +19,7 @@ class HeartlandInventory extends HeartlandInventoryBase
         try {
 
             
-            $this->createTable(true);
+            $this->resetTable();
 
             $page = 1;
             $perPage = 1000;
@@ -48,7 +48,7 @@ class HeartlandInventory extends HeartlandInventoryBase
                         foreach ($inventoryData as $data) {
                             $row = [];
                             $row['item_id'] = $data['item_id'];
-                            $row['location_id'] = $data['location_id'];
+                            $row['h_location_id'] = $data['location_id'];
                             $row['on_hand'] = $data['qty_on_hand'];
                             $this->insert($row);
                         }

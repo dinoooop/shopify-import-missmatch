@@ -2,18 +2,17 @@
 
 namespace scripts\InventoryCorrection;
 
+use scripts\InventoryCorrection\Base\WriteCSVBase;
 
-class WriteCSV
+class WriteCSV extends WriteCSVBase
 {
 
     function __construct()
     {
-        $this->missMatch = new MissMatch();
         $date = date("Y-m-d");
         $this->fileImportMissMatch = "./resources/inventory-correction/output/heartland-import-missmatches-{$date}.csv";
         $this->fileQuickRead = "./resources/inventory-correction/output/heartland-quick-read-missmatches-{$date}.csv";
     }
-
 
     public function createImportCSV()
     {
@@ -22,7 +21,7 @@ class WriteCSV
             $file = fopen($this->fileImportMissMatch, 'w');
 
             if ($file !== false) {
-                $header = [
+                fputcsv($file, [
                     'Handle',
                     'Option1 Name',
                     'Option1 Value',
@@ -32,9 +31,7 @@ class WriteCSV
                     'Option3 Value',
                     'Location',
                     'On hand',
-                ];
-
-                fputcsv($file, $header);
+                ]);
             } else {
                 exit("csv file error");
             }
@@ -43,12 +40,10 @@ class WriteCSV
             $perPage = 1000;
 
             do {
-
                 echo "write csv page: {$page} \n";
-                $products = $this->missMatch->getMissMatchForWriteCSV($page, $perPage);
-
+                $products = $this->getMissMatchesForWriteImportCSV($page, $perPage);
                 foreach ($products as $product) {
-                    $row = [
+                    fputcsv($file, [
                         $product['handle'],
                         $product['option1_name'],
                         $product['option1_value'],
@@ -58,8 +53,7 @@ class WriteCSV
                         $product['option3_value'],
                         $product['location'],
                         $product['on_hand'],
-                    ];
-                    fputcsv($file, $row);
+                    ]);
                 }
 
 
@@ -84,15 +78,13 @@ class WriteCSV
             $file = fopen($this->fileQuickRead, 'w');
 
             if ($file !== false) {
-                $header = [
+                fputcsv($file, [
                     'Barcode',
                     'Heartland Location',
                     'Shopify Location',
                     'Heartland on hand qty',
                     'Shopify on hand qty',
-                ];
-
-                fputcsv($file, $header);
+                ]);
             } else {
                 exit("csv file error");
             }
@@ -100,16 +92,16 @@ class WriteCSV
             do {
 
                 echo "write to csv page: {$page} \n";
-                $missMatches = $this->missMatch->getMissMatches($page, $perPage);
+                $missMatches = $this->getMissMatchesForWriteQuickReadCSV($page, $perPage);
 
                 foreach ($missMatches as $key => $missMatche) {
-                    $row = [];
-                    $row['barcode'] = $missMatche['barcode'];
-                    $row['heartland_location'] = $this->getHearthLocationName($missMatche['s_location_id']);
-                    $row['shopify_location'] = $this->getShopifyLocationName($missMatche['s_location_id']);
-                    $row['heartland'] = $missMatche['h_qty'];
-                    $row['shopify'] = $missMatche['s_qty'];
-                    fputcsv($file, $row);
+                    fputcsv($file, [
+                        $missMatche['barcode'],
+                        $missMatche['h_location_name'],
+                        $missMatche['s_location_name'],
+                        $missMatche['h_qty'],
+                        $missMatche['s_qty'],
+                    ]);
                 }
 
                 $page++;

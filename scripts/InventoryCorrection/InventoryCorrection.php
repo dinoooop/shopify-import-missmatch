@@ -16,8 +16,7 @@ class InventoryCorrection
     public function setMapLocation()
     {
         $obj = new MapLocation();
-        $obj->createTable();
-        $obj->import();
+        $obj->init();
     }
     public function setShopifyProducts()
     {
@@ -45,6 +44,7 @@ class InventoryCorrection
     {
         $obj = new ShopifyAdjustment();
         $obj->import();
+        $obj->updateActivity();
     }
     // Final task
     public function generateCSV()

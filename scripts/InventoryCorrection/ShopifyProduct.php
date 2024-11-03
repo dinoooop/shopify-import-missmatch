@@ -20,7 +20,7 @@ class ShopifyProduct extends ShopifyProductBase
     public function importFromGQL()
     {
 
-        $this->createTable(true);
+        $this->resetTable();
 
         $query = $this->getProductsGQL();
 
@@ -61,8 +61,8 @@ class ShopifyProduct extends ShopifyProductBase
 
                 $inventoryLevels = $variant->inventoryItem->inventoryLevels->nodes;
                 foreach ($inventoryLevels as $key => $inventoryLevel) {
-                    $row['location_gid'] = $inventoryLevel->location->id;
-                    $row['location'] = $inventoryLevel->location->name;
+                    $row['s_location_id'] = $this->intShopifyLocationId($inventoryLevel->location->id);
+                    $row['s_location_name'] = $inventoryLevel->location->name;
                     $row['on_hand'] = isset($inventoryLevel->quantities[0]) ? $inventoryLevel->quantities[0]->quantity : null;
                     $this->insert($row);
                 }
@@ -78,42 +78,4 @@ class ShopifyProduct extends ShopifyProductBase
         } while ($hasNextPage);
     }
 
-    public function importFromCSV()
-    {
-        try {
-
-            $this->createTable(true);
-
-            $file = "./resources/inventory-correction/shopify_products.csv";
-            $handle = fopen($file, 'r');
-
-            $header = array_map('trim', fgetcsv($handle));
-            while (($data = fgetcsv($handle)) !== false) {
-                $row = [];
-
-                $row['variant_gid'] = null;
-                $row['barcode'] = $data[array_search("Variant Barcode", $header)];
-                $row['sku'] = $data[array_search("sku", $header)];
-                $row['option1_name'] = $data[array_search("option1_name", $header)];
-                $row['option1_value'] = $data[array_search("option1_value", $header)];
-                $row['option2_name'] = $data[array_search("option2_name", $header)];
-                $row['option2_value'] = $data[array_search("option2_value", $header)];
-                $row['option3_name'] = $data[array_search("option3_name", $header)];
-                $row['option3_value'] = $data[array_search("option3_value", $header)];
-                $row['product_gid'] = null;
-                $row['handle'] = $data[array_search("handle", $header)];
-                $row['location_gid'] = null;
-                $row['location'] = $data[array_search("Location", $header)];
-                $row['on_hand'] = $data[array_search("On Hand", $header)];
-
-                if (!empty(trim($row['barcode']))) {
-                    $this->insert($row);
-                }
-            }
-
-            fclose($handle);
-        } catch (\Throwable $th) {
-            throw $th;
-        }
-    }
 }

@@ -2,6 +2,8 @@
 
 namespace scripts\InventoryCorrection\Base;
 
+use scripts\InventoryCorrection\Utilities\Format;
+
 class ShopifyAdjustmentBase extends ManageDB
 {
     private $table;
@@ -9,26 +11,22 @@ class ShopifyAdjustmentBase extends ManageDB
     function __construct()
     {
         parent::__construct();
-        $this->table = "stocky_adjustments";
+        $this->table = "shopify_adjustments";
     }
 
-    public function createTable($truncate = false)
+    public function resetTable()
     {
 
+        $this->pdo->exec("DROP TABLE IF EXISTS {$this->table};");
         $this->pdo->exec("
                 CREATE TABLE IF NOT EXISTS {$this->table} (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     barcode VARCHAR(255),
-                    location_gid VARCHAR(255),
+                    s_location_name VARCHAR(255),
                     qty INTEGER,
-                    created_at TEXT
+                    created_at TEXT -- Store dates in 'YYYY-MM-DD' format
                 )
             ");
-
-        if ($truncate) {
-            $this->pdo->exec("DELETE FROM {$this->table}");
-            $this->pdo->exec("DELETE FROM sqlite_sequence WHERE name='{$this->table}'");
-        }
     }
 
     public function insert($row)
@@ -37,18 +35,18 @@ class ShopifyAdjustmentBase extends ManageDB
             $stmt = $this->pdo->prepare("
                 INSERT INTO {$this->table} (
                     barcode, 
-                    location_gid, 
+                    s_location_name, 
                     qty,
                     created_at
                 ) VALUES (
                     :barcode, 
-                    :location_gid, 
+                    :s_location_name, 
                     :qty,
                     :created_at
                 )
             ");
             $stmt->bindParam(':barcode', $row['barcode']);
-            $stmt->bindParam(':location_gid', $row['location_gid']);
+            $stmt->bindParam(':s_location_name', $row['s_location_name']);
             $stmt->bindParam(':qty', $row['qty']);
             $stmt->bindParam(':created_at', $row['created_at']);
             $stmt->execute();
@@ -59,20 +57,20 @@ class ShopifyAdjustmentBase extends ManageDB
 
     
 
-    public function getAdjustmentSum($barcode, $location, $date)
+    public function getAdjustmentSum($missMatch)
     {
         try {
             $stmt = $this->pdo->prepare("
                 SELECT SUM(qty) FROM {$this->table} 
                 WHERE 
                     barcode = :barcode AND 
-                    location_gid = :location_gid AND 
+                    s_location_name = :s_location_name AND 
                     created_at > :created_at
             ");
 
-            $stmt->bindParam(':barcode', $barcode);
-            $stmt->bindParam(':location_gid', $location);
-            $stmt->bindParam(':created_at', $date);
+            $stmt->bindParam(':barcode', $missMatch['barcode']);
+            $stmt->bindParam(':s_location_name', $missMatch['s_location_name']);
+            $stmt->bindParam(':created_at', $this->lastImportDate);
             $stmt->execute();
             $record = $stmt->fetch(\PDO::FETCH_ASSOC);
             return $record['SUM(qty)'] ?? 0;

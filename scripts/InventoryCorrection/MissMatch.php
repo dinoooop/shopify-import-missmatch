@@ -19,7 +19,7 @@ class MissMatch extends MissMatchBase
         try {
 
 
-            $this->createTable(true);
+            $this->resetTable();
             
             $page = 1;
             $perPage = 1000;
@@ -29,7 +29,7 @@ class MissMatch extends MissMatchBase
 
                 echo "Missmatch page: {$page} \n";
 
-                foreach ($missMatches as $key => $missMatche) {
+                foreach ($missMatches as $missMatche) {
                     $row = [];
                     $row['barcode'] = $missMatche['barcode'];
                     $row['s_location_id'] = $missMatche['s_location_id'];
@@ -46,38 +46,9 @@ class MissMatch extends MissMatchBase
         }
     }
 
-    public function getMissMatchForWriteCSV($page, $limit)
-    {
+    
 
-        $offset = ($page - 1) * $limit;
-
-        $stmt = $this->pdo->prepare("
-            SELECT 
-                {$this->table}.barcode AS barcode,
-                sku,
-                option1_name,
-                option1_value,
-                option2_name,
-                option2_value,
-                option3_name,
-                option3_value,
-                handle,
-                location,
-                miss_matches.h_qty AS on_hand
-            FROM miss_matches
-            LEFT JOIN 
-                shopify_products ON miss_matches.barcode = shopify_products.barcode
-                AND miss_matches.s_location_id = shopify_products.location_gid
-            LIMIT :limit OFFSET :offset
-        ");
-
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-
-        $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $results;
-    }
+    
 
 
     public function getMissMatches($page, $limit)

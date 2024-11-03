@@ -13,38 +13,29 @@ class ShopifyProductBase extends ManageDB
         parent::__construct();
         $this->table = 'shopify_products';
     }
-    
-    public function createTable($truncate = false)
+
+    public function resetTable()
     {
-        try {
-
-            $this->pdo->exec("
-                CREATE TABLE IF NOT EXISTS {$this->table} (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    variant_gid VARCHAR(255),
-                    barcode VARCHAR(255),
-                    sku VARCHAR(255),
-                    option1_name VARCHAR(255),
-                    option1_value VARCHAR(255),
-                    option2_name VARCHAR(255),
-                    option2_value VARCHAR(255),
-                    option3_name VARCHAR(255),
-                    option3_value VARCHAR(255),
-                    product_gid VARCHAR(255),
-                    handle VARCHAR(255),
-                    location_gid VARCHAR(255),
-                    location VARCHAR(255),
-                    on_hand INTEGER
-                );
-            ");
-
-            if ($truncate) {
-                $this->pdo->exec("DELETE FROM {$this->table}");
-                $this->pdo->exec("DELETE FROM sqlite_sequence WHERE name='{$this->table}'");
-            }
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
-        }
+        $this->pdo->exec("DROP TABLE IF EXISTS {$this->table};");
+        $this->pdo->exec("
+            CREATE TABLE IF NOT EXISTS {$this->table} (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                variant_gid VARCHAR(255),
+                barcode VARCHAR(255),
+                sku VARCHAR(255),
+                option1_name VARCHAR(255),
+                option1_value VARCHAR(255),
+                option2_name VARCHAR(255),
+                option2_value VARCHAR(255),
+                option3_name VARCHAR(255),
+                option3_value VARCHAR(255),
+                product_gid VARCHAR(255),
+                handle VARCHAR(255),
+                s_location_id INTEGER,
+                s_location_name VARCHAR(255),
+                on_hand INTEGER
+            );
+        ");
     }
 
     public function insert($row)
@@ -63,8 +54,8 @@ class ShopifyProductBase extends ManageDB
                     option3_value, 
                     product_gid, 
                     handle, 
-                    location_gid, 
-                    location, 
+                    s_location_id, 
+                    s_location_name, 
                     on_hand
                 ) VALUES (
                     :variant_gid,
@@ -78,8 +69,8 @@ class ShopifyProductBase extends ManageDB
                     :option3_value,
                     :product_gid,
                     :handle,
-                    :location_gid,
-                    :location,
+                    :s_location_id,
+                    :s_location_name,
                     :on_hand
                 );
             ");
@@ -95,8 +86,8 @@ class ShopifyProductBase extends ManageDB
             $stmt->bindParam('option3_value', $row['option3_value']);
             $stmt->bindParam('product_gid', $row['product_gid']);
             $stmt->bindParam('handle', $row['handle']);
-            $stmt->bindParam('location_gid', $row['location_gid']);
-            $stmt->bindParam('location', $row['location']);
+            $stmt->bindParam('s_location_id', $row['s_location_id']);
+            $stmt->bindParam('s_location_name', $row['s_location_name']);
             $stmt->bindParam('on_hand', $row['on_hand']);
 
             $stmt->execute();

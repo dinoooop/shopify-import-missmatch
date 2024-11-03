@@ -16,32 +16,24 @@ class MissMatchBase extends ManageDB
         $this->table = "miss_matches";
     }
 
-    public function createTable($truncate = false)
+    public function resetTable()
     {
-        try {
-            $this->pdo->exec("
-                CREATE TABLE IF NOT EXISTS {$this->table} (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    barcode VARCHAR(255) NOT NULL,
-                    s_location_id VARCHAR(255) NOT NULL,
-                    h_location_id INTEGER NOT NULL,
-                    s_qty INTEGER DEFAULT 0,
-                    h_qty INTEGER DEFAULT 0,
-                    order INTEGER,
-                    purchase_order INTEGER,
-                    transfer INTEGER,
-                    adjustment INTEGER,
-                    other INTEGER
-                )
-            ");
-
-            if ($truncate) {
-                $this->pdo->exec("DELETE FROM {$this->table}");
-                $this->pdo->exec("DELETE FROM sqlite_sequence WHERE name='{$this->table}'");
-            }
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
-        }
+        $this->pdo->exec("DROP TABLE IF EXISTS {$this->table};");
+        $this->pdo->exec("
+            CREATE TABLE IF NOT EXISTS {$this->table} (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                barcode VARCHAR(255) NOT NULL,
+                s_location_id VARCHAR(255) NOT NULL,
+                h_location_id INTEGER NOT NULL,
+                s_qty INTEGER DEFAULT 0,
+                h_qty INTEGER DEFAULT 0,
+                order INTEGER,
+                purchase_order INTEGER,
+                transfer INTEGER,
+                adjustment INTEGER,
+                other INTEGER
+            )
+        ");
     }
 
     public function findAllMissMatches($page, $limit)
@@ -58,17 +50,18 @@ class MissMatchBase extends ManageDB
                 heartland_inventories.on_hand AS h_qty
             FROM shopify_products
             LEFT JOIN
-                map_locations
-                    ON shopify_products.location_gid = map_locations.s_location_id
+                map_locations ON 
+                    shopify_products.s_location_id = map_locations.s_location_id
             LEFT JOIN
-                heartland_products  -- Ensure this table name is correct
-                    ON shopify_products.barcode = heartland_products.barcode
+                heartland_products ON 
+                    shopify_products.barcode = heartland_products.barcode
             LEFT JOIN
-                heartland_inventories
-                    ON heartland_products.item_id = heartland_inventories.item_id AND
-                    map_locations.h_location_id = heartland_inventories.location_id
+                heartland_inventories ON 
+                    heartland_products.item_id = heartland_inventories.item_id AND
+                    map_locations.h_location_id = heartland_inventories.h_location_id
             WHERE 
-                shopify_products.barcode IS NOT NULL AND shopify_products.barcode != '' AND
+                shopify_products.barcode IS NOT NULL AND 
+                shopify_products.barcode != '' AND
                 COALESCE(shopify_products.on_hand, 0) != COALESCE(heartland_inventories.on_hand, 0)
             LIMIT :limit OFFSET :offset;
         ");
@@ -81,7 +74,7 @@ class MissMatchBase extends ManageDB
         return $results;
     }
 
-    
+
 
     public function insert($row)
     {
@@ -112,5 +105,30 @@ class MissMatchBase extends ManageDB
         }
     }
 
-    
+    public function update($id, $data)
+    {
+        try {
+            $setClause = [];
+            foreach ($data as $column => $value) {
+                $setClause[] = "{$column} = :{$column}";
+            }
+            $setClause = implode(', ', $setClause);
+
+            $stmt = $this->pdo->prepare("
+                UPDATE {$this->table} 
+                SET {$setClause}
+                WHERE id = :id
+            ");
+
+            foreach ($data as $column => $value) {
+                $stmt->bindValue(":{$column}", $value);
+            }
+            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+
+            $stmt->execute();
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
 }

@@ -20,7 +20,7 @@ class HeartlandProduct extends HeartlandProductBase
     {
         try {
 
-            $this->createTable(true);
+            $this->resetTable();
 
             Helper::printMe("Write Heartland items");
             $page = 1;

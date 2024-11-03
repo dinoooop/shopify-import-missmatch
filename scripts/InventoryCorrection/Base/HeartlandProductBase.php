@@ -12,9 +12,10 @@ class HeartlandProductBase extends ManageDB
         $this->table = "heartland_products";
     }
 
-    public function createTable($truncate = false)
+    public function resetTable()
     {
 
+        $this->pdo->exec("DROP TABLE IF EXISTS {$this->table};");
         $this->pdo->exec("
                 CREATE TABLE IF NOT EXISTS {$this->table} (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,11 +25,6 @@ class HeartlandProductBase extends ManageDB
                     barcode VARCHAR(255)
                 )
             ");
-
-        if ($truncate) {
-            $this->pdo->exec("DELETE FROM {$this->table}");
-            $this->pdo->exec("DELETE FROM sqlite_sequence WHERE name='{$this->table}'");
-        }
     }
 
     public function insert($row)
