@@ -1,0 +1,5 @@
+/notes
+*.sqlite
+*.sqlite3
+*.xlsx
+*.csv
