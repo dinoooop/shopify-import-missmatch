@@ -3,14 +3,13 @@
 namespace scripts\InventoryCorrection;
 
 
-class ShopifyAdjustment extends ShopifyAdjustmentBase
+class ShopifyPurchaseOrder extends ShopifyPurchaseOrderBase
 {
     private $file;
 
     function __construct()
     {
         parent::__construct();
-        $this->file = "./resources/inventory-correction/stock_adjustments.csv";
         $this->missMatch = new MissMatch();
     }
 
@@ -24,14 +23,15 @@ class ShopifyAdjustment extends ShopifyAdjustmentBase
             $header = array_map('trim', fgetcsv($handle));
             while (($data = fgetcsv($handle)) !== false) {
                 $row = [];
-                $status = $data[array_search("Status", $header)];
-                $row['barcode'] = $data[array_search("Barcode", $header)];
-                $date = $data[array_search("Date", $header)];
 
-                if ($status == 'adjusted' && !empty($row['barcode'])) {
-                    $row['s_location_name'] = $data[array_search("Location", $header)];
-                    $row['qty'] = $data[array_search("Adjustment", $header)];
-                    $row['created_at'] = $this->changeDateFormat($date);
+                $row['barcode'] = $data[array_search("Barcode", $header)];
+                $row['s_location_name'] = $data[array_search("Location", $header)];
+                $row['qty'] = $data[array_search("Adjustment", $header)];
+
+                $date = $data[array_search("Date", $header)];
+                $row['created_at'] = $this->changeDateFormat($date);
+
+                if (!empty($row['barcode'])) {
                     $this->insert($row);
                 }
             }
@@ -44,19 +44,19 @@ class ShopifyAdjustment extends ShopifyAdjustmentBase
 
     public function updateActivity()
     {
-        
+
 
         $page = 1;
         $limit = 1000;
 
         do {
 
-            echo "Miss match update for adjustment: {$page} \n";
+            echo "Miss match update for purchase order: {$page} \n";
             $missMatches = $this->missMatch->getMissMatches($page, $limit);
 
             foreach ($missMatches as $key => $missMatch) {
                 $sum = $this->getSum($missMatch);
-                $this->missMatch->update($missMatch['id'], ['adjustment' => $sum]);
+                $this->missMatch->update($missMatch['id'], ['purchase_order' => $sum]);
             }
 
             $page++;

@@ -4,15 +4,18 @@ namespace scripts\InventoryCorrection;
 
 class ManageDB
 {
+    public $pdo;
     public $lastImportDate;
+    public $lastImportDateISOformat;
+
     function __construct()
     {
         $database = 'sample-1001';
         $this->pdo = new \PDO("sqlite:./{$database}.sqlite");
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->lastImportDate = '2024-11-2';
+        $this->lastImportDate = '2024-09-01';
+        $this->lastImportDateISOformat = '2024-09-01T00:00:00Z';
     }
-
 
     public function getShopifyLocationIdByName($locationName)
     {

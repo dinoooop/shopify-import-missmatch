@@ -1,0 +1,6 @@
+master: basic
+    task1001:   (Not need) use only location name 
+    task1002:   (merged) implement reset table
+    task1003:   take base out
+                shopify purchase order
+                

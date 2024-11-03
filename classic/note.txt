@@ -1,0 +1,26 @@
+$heit = null;
+        if(!empty($heit)){
+            echo "Yes";
+        } else {
+            echo "No";
+        }
+
+
+Values considered empty: 0, 0.0, "0", "", null, false, array(), undefined
+
+Q: created_at TEXT
+can I do operation like >, < on created_at?
+
+Yes, you can perform comparison operations (>, <, etc.) on created_at in SQLite, 
+even if it’s stored as TEXT—as long as the dates are in a sortable format like ISO 8601 (YYYY-MM-DDTHH:MM:SSZ or YYYY-MM-DD HH:MM:SS).
+
+
+{
+	"Print something": {
+		"prefix": "pri-",
+		"body": [
+			"print_r($1); exit();",
+		],
+		"description": "Print something"
+	}
+}

@@ -1,0 +1,26 @@
+SQL code needs to write for following database changes
+-----------------------------------------------
+heartland_inventories
+	location_id >> h_location_id
+
+
+Need reset table
+-----------------------------------------------
+shopify_products
+    rename location to s_location_name
+    rename location_gid to s_location_id
+
+SQL code wrote for following database changes
+-----------------------------------------------
+Drop table if exist hearth_inventories
+hearth_products >> heartland_products
+miss_match_products >> miss_matches 
+s_locaion_id >> s_location_id
+New columns for miss_matches
+	order
+	purchase order
+	transfer
+	adjustment
+
+
+

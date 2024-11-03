@@ -13,21 +13,25 @@ class InventoryCorrection
         $obj = new TestCode();
         $obj->test();
     }
+
     public function setMapLocation()
     {
         $obj = new MapLocation();
         $obj->init();
     }
+
     public function setShopifyProducts()
     {
         $obj = new ShopifyProduct();
         $obj->init();
     }
+
     public function setHeartlandProducts()
     {
         $obj = new HeartlandProduct();
         $obj->init();
     }
+
     public function setHeartlandInventories()
     {
         $obj = new HeartlandInventory();
@@ -46,7 +50,7 @@ class InventoryCorrection
         $obj->import();
         $obj->updateActivity();
     }
-    // Final task
+
     public function generateCSV()
     {
         $obj = new WriteCSV();

@@ -45,17 +45,24 @@ class MissMatch extends MissMatchBase
         }
     }
 
-    
-
-    
-
-
     public function getMissMatches($page, $limit)
     {
         $offset = ($page - 1) * $limit;
 
         $stmt = $this->pdo->prepare("
-            SELECT * FROM {$this->table} LIMIT :limit OFFSET :offset
+            SELECT
+                miss_matches.barcode AS barcode,
+                map_locations.s_location_id AS s_location_id,
+                map_locations.s_location_name AS s_location_name,
+                map_locations.h_location_id AS h_location_id,
+                map_locations.h_location_name AS h_location_name,
+                miss_matches.s_qty AS s_qty,
+                miss_matches.h_qty AS h_qty
+            FROM miss_matches
+            LEFT JOIN
+                map_locations ON
+                    miss_matches.s_location_id = map_locations.s_location_id
+            LIMIT :limit OFFSET :offset
         ");
 
         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);

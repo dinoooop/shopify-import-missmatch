@@ -1,0 +1,6 @@
+check against 
+    order
+    purchase_order
+    transfer In, out 
+    adjustment
+    other

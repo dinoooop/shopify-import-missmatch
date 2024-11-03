@@ -3,14 +3,14 @@
 namespace scripts\InventoryCorrection;
 
 
-class ShopifyAdjustmentBase extends ManageDB
+class ShopifyOrderBase extends ManageDB
 {
     private $table;
 
     function __construct()
     {
         parent::__construct();
-        $this->table = "shopify_adjustments";
+        $this->table = "shopify_orders";
     }
 
     public function resetTable()
@@ -23,7 +23,7 @@ class ShopifyAdjustmentBase extends ManageDB
                     barcode VARCHAR(255),
                     s_location_name VARCHAR(255),
                     qty INTEGER,
-                    created_at TEXT -- Store dates in 'YYYY-MM-DD' format
+                    created_at TEXT
                 )
             ");
     }
@@ -54,8 +54,6 @@ class ShopifyAdjustmentBase extends ManageDB
         }
     }
 
-    
-
     public function getSum($missMatch)
     {
         try {
@@ -76,5 +74,38 @@ class ShopifyAdjustmentBase extends ManageDB
         } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
+    }
+
+    public static function getFulfillmentOrdersGQL()
+    {
+        return <<<'GRAPHQL'
+            query getOrders($after: String) {
+                fulfillmentOrders(first: 250,  after:$after, reverse: true) {
+                    nodes {
+                        id
+                        fulfillAt
+                        assignedLocation {
+                            location {
+                                id
+                                name
+                            }
+                        }
+                        lineItems(first:20){
+                            nodes {
+                                id
+                                totalQuantity
+                                variant {
+                                    barcode
+                                }
+                            }
+                        }
+                    }
+                    pageInfo {
+                        hasNextPage
+                        endCursor
+                    }
+                }
+            }
+            GRAPHQL;
     }
 }

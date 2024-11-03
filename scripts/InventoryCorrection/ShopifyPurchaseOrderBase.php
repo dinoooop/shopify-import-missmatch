@@ -3,14 +3,14 @@
 namespace scripts\InventoryCorrection;
 
 
-class ShopifyAdjustmentBase extends ManageDB
+class ShopifyPurchaseOrderBase extends ManageDB
 {
     private $table;
 
     function __construct()
     {
         parent::__construct();
-        $this->table = "shopify_adjustments";
+        $this->table = "shopify_purchase_orders";
     }
 
     public function resetTable()
@@ -23,7 +23,7 @@ class ShopifyAdjustmentBase extends ManageDB
                     barcode VARCHAR(255),
                     s_location_name VARCHAR(255),
                     qty INTEGER,
-                    created_at TEXT -- Store dates in 'YYYY-MM-DD' format
+                    created_at TEXT
                 )
             ");
     }

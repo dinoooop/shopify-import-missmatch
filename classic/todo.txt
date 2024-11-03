@@ -1,0 +1,34 @@
+@todo
+- allow variant_gid null for shopify products
+- shopify variants from csv
+- proper dir inventory-correction
+- implement reset table
+- remove all location gid
+- github
+- take base out
+- shopify purchase order 
+- shopify transfer
+shopify order GQL
+remove truncate and set drop table
+convert 2024-11-03 19:30:55 +0530 to Y-m-d (shopify transfer)
+
+
+@todo office
+create dir inventory-correction, output
+set map_location.csv
+created_at format
+
+
+Version 2
+committed
+
+
+Changes in the order
+---------------------
+Test code
+- Set map location
+- Fetch shopify product
+Fetch heartland products
+Fetch heartland inventories
+Find Miss Matches
+Create CSV 

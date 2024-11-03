@@ -21,17 +21,15 @@ class HeartlandProduct extends HeartlandProductBase
 
             $this->resetTable();
 
-            Helper::printMe("Write Heartland items");
             $page = 1;
             $perPage = 1000;
 
             do {
-                Helper::printMe("Heartland items page:- {$page}");
+                echo "Set heartland products page:- {$page}";
                 $query = array(
                     'per_page' => $perPage,
                     'page' => $page,
                 );
-
                 $query = http_build_query($query);
                 $query = preg_replace('/\[\d+\]/', '[]', urldecode($query));
                 $path = "items?{$query}";
@@ -50,7 +48,10 @@ class HeartlandProduct extends HeartlandProductBase
                             $row['public_id'] = $data['public_id'];
                             $row['sku'] = (isset($data['custom']) && isset($data['custom']['sku'])) ? $data['custom']['sku'] : null;
                             $row['barcode'] = $data['primary_barcode'];
-                            $this->insert($row);
+                            
+                            if(!empty($row['barcode'])){
+                                $this->insert($row);
+                            }
                         }
                     }
                 } else {
