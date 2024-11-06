@@ -1,0 +1,20 @@
+heartland_products
+    item_id
+    public_id
+    sku
+    primary_barcode
+
+    sr_public_id
+    true_barcode
+
+Find total records 
+check all primary_barcode is not null (Get the count)
+Find barcodless count
+
+Join with sku, if barcode is same for both table - set true_barcode
+Set all sr_public_id (do public id contain SR?)
+if primary_barcode and sr_public_id are same - set true_barcode (for true_barcode is null)
+
+INNER JOIN
+    h_products
+        ON s_products.sku = h_products.sku
